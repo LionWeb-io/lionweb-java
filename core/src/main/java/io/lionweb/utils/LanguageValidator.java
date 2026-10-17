@@ -71,28 +71,30 @@ public class LanguageValidator extends Validator<Language> {
 
   /** It checks if there is any circularity (direct or indirect) in the given StructuredDataType. */
   public static boolean isCircular(StructuredDataType structuredDataType) {
-    Set<StructuredDataType> circularSDTs = new HashSet<>();
-    Set<StructuredDataType> visited = new HashSet<>();
-    Stack<StructuredDataType> toVisit = new Stack<>();
-    toVisit.add(structuredDataType);
+    return isCircular(structuredDataType, new HashSet<>(), new HashSet<>());
+  }
 
-    while (!toVisit.isEmpty()) {
-      StructuredDataType sdt = toVisit.pop();
-      visited.add(sdt);
-      sdt.getFields()
-          .forEach(
-              field -> {
-                if (field.getType() instanceof StructuredDataType) {
-                  StructuredDataType newSDT = (StructuredDataType) field.getType();
-                  if (visited.contains(newSDT)) {
-                    circularSDTs.add(newSDT);
-                  } else {
-                    toVisit.add((StructuredDataType) field.getType());
-                  }
-                }
-              });
+  /**
+   * Depth-first search: a cycle exists only if we reach an SDT that is on the current path.
+   * Reaching an already fully explored SDT through another path is not a cycle.
+   */
+  private static boolean isCircular(
+      StructuredDataType sdt, Set<StructuredDataType> onPath, Set<StructuredDataType> explored) {
+    if (onPath.contains(sdt)) {
+      return true;
     }
-    return !circularSDTs.isEmpty();
+    if (!explored.add(sdt)) {
+      return false;
+    }
+    onPath.add(sdt);
+    for (Field field : sdt.getFields()) {
+      if (field.getType() instanceof StructuredDataType
+          && isCircular((StructuredDataType) field.getType(), onPath, explored)) {
+        return true;
+      }
+    }
+    onPath.remove(sdt);
+    return false;
   }
 
   private void validateStructuralDataType(

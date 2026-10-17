@@ -428,6 +428,53 @@ public class LanguageValidatorTest {
   }
 
   @Test
+  public void diamondOfSDTsIsNotCircular() {
+    // A{b:B, c:C}, B{d:D}, C{d:D}
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    l.addDependency(LionCoreBuiltins.getInstance());
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    StructuredDataType sdtC = new StructuredDataType(l, "SDTC", "sdtc_id", "sdtc_key");
+    StructuredDataType sdtD = new StructuredDataType(l, "SDTD", "sdtd_id", "sdtd_key");
+    sdtA.addField(new Field("b", sdtB, "fb_id", "fb_key"));
+    sdtA.addField(new Field("c", sdtC, "fc_id", "fc_key"));
+    sdtB.addField(new Field("d", sdtD, "fbd_id", "fbd_key"));
+    sdtC.addField(new Field("d", sdtD, "fcd_id", "fcd_key"));
+    sdtD.addField(new Field("s", LionCoreBuiltins.getString(), "fds_id", "fds_key"));
+    assertFalse(LanguageValidator.isCircular(sdtA));
+    assertFalse(LanguageValidator.isCircular(sdtB));
+    assertFalse(LanguageValidator.isCircular(sdtC));
+    assertFalse(LanguageValidator.isCircular(sdtD));
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+
+    sdtD.addField(new Field("a", sdtA, "fda_id", "fda_key"));
+    assertTrue(LanguageValidator.isCircular(sdtA));
+    assertTrue(LanguageValidator.isCircular(sdtD));
+  }
+
+  @Test
+  public void sdtUsedByMultipleFieldsIsNotCircular() {
+    // P{q1:Q, q2:Q}, Q{r:R}
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    l.addDependency(LionCoreBuiltins.getInstance());
+    StructuredDataType sdtP = new StructuredDataType(l, "SDTP", "sdtp_id", "sdtp_key");
+    StructuredDataType sdtQ = new StructuredDataType(l, "SDTQ", "sdtq_id", "sdtq_key");
+    StructuredDataType sdtR = new StructuredDataType(l, "SDTR", "sdtr_id", "sdtr_key");
+    sdtP.addField(new Field("q1", sdtQ, "fq1_id", "fq1_key"));
+    sdtP.addField(new Field("q2", sdtQ, "fq2_id", "fq2_key"));
+    sdtQ.addField(new Field("r", sdtR, "fr_id", "fr_key"));
+    sdtR.addField(new Field("s", LionCoreBuiltins.getString(), "frs_id", "frs_key"));
+    assertFalse(LanguageValidator.isCircular(sdtP));
+    assertFalse(LanguageValidator.isCircular(sdtQ));
+    assertFalse(LanguageValidator.isCircular(sdtR));
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+
+    sdtR.addField(new Field("q", sdtQ, "frq_id", "frq_key"));
+    assertTrue(LanguageValidator.isCircular(sdtQ));
+    assertTrue(LanguageValidator.isCircular(sdtR));
+  }
+
+  @Test
   public void signalLWVersionInconsistencyOnConcept() {
     Language l =
         new Language(LionWebVersion.v2024_1, "MyLanguage")
