@@ -91,11 +91,9 @@ gradle.projectsEvaluated {
         description = "Aggregate Javadoc from all subprojects"
         destinationDir = file("$rootDir/website/static/api")
 
-        val includedProjects = subprojects.filter { it.name != "docs-examples" }
-
         val allSources =
             files(
-                includedProjects.mapNotNull {
+                subprojects.mapNotNull {
                     it.extensions
                         .findByType<JavaPluginExtension>()
                         ?.sourceSets
@@ -106,7 +104,7 @@ gradle.projectsEvaluated {
 
         val allClasspaths =
             files(
-                includedProjects.mapNotNull {
+                subprojects.mapNotNull {
                     it.extensions
                         .findByType<JavaPluginExtension>()
                         ?.sourceSets
