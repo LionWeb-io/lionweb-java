@@ -45,8 +45,11 @@ Before opening in IDEA run:
 
 This will generate necessary classes.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to build the project, the code conventions, and how
+to submit changes.
+
 ## Core
-Contains LionCore (M2) and LionWeb (M1) implementations in Java, including (de-)serializers from/to JSON.
+Contains LionCore (M2) and LionWeb (M1) implementations in Java, including (de-)serializers from/to JSON and Protocol Buffers.
 
 ## Emf
 Contains im/exporters to convert models between LionCore &harr; Ecore and LionWeb &harr; EMF.
@@ -62,12 +65,12 @@ includes an in-memory server, paired with a Client exposing the same interface a
 the LionWeb Server.
 
 ## Client-testing
-Facilities to write functional tests against the LionWeb Server.
+Facilities to write functional tests against the LionWeb Server, started in Docker via Testcontainers, or against the in-memory server.
 
 ## Extensions
 Serialization-related extensions that go beyond the core LionWeb specification:
 
-- **Protobuf serialization** — efficient binary encoding/decoding of LionWeb serialization chunks using Protocol Buffers
+- **Protobuf extensions** — Protobuf encoding of non-standard messages, such as bulk imports, and a client for the corresponding LionWeb Server APIs
 - **LionWeb Archive (`.lwa`)** — a ZIP-based packaging format that bundles partitions, language definitions, and metadata into a single versioned file
 
 ## Kotlin-core
@@ -80,7 +83,7 @@ dependencies {
 ```
 
 ## Kotlin-client
-Kotlin-idiomatic bindings on top of `client` for connecting to a LionWeb Server. Provides a high-level `LionWebClient` that works with typed `BaseNode` subclasses, and a low-level `LowLevelRepoClient` for raw chunk access.
+Kotlin-idiomatic bindings on top of `client` for connecting to a LionWeb Server. Provides a high-level `LionWebClient` that works with any node, including typed `BaseNode` subclasses defined with `kotlin-core`.
 
 ```kotlin
 dependencies {
@@ -137,24 +140,8 @@ The Changelog is [here](CHANGELOG.md).
 
 ## Testing
 
-To ensure proper testing coverage we configured Jacoco.
-You can run `./gradlew jacocoTestReport` and then find the report for each module, under `build/reports/jacoco`.
-
-## Benchmarks
-
-The project includes JMH (Java Microbenchmark Harness) benchmarks to measure and optimize serialization/deserialization performance:
-
-- **DeserializeFromChunkBenchmark** - Benchmarks `deserializeSerializationChunk` performance, measuring both the core deserialization logic (excluding JSON parsing) and end-to-end deserialization from JSON
-- **SerializeNodesToChunkBenchmark** - Benchmarks `serializeNodesToSerializationChunk` performance, comparing direct serialization of flat node collections versus tree-based serialization with traversal
-- **ProtoBufBytesBenchmark** - Benchmarks Protobuf binary serialization/deserialization via `DirectProtoBufSerializer` / `DirectProtoBufDeserializer`, measuring the cost of converting a `SerializationChunk` to bytes and back
-
-These benchmarks use GC profiling to track memory allocations and identify optimization opportunities. They are located in `core/src/performanceTest/java` and can be run using:
-
-```
-./gradlew :core:performanceTest
-```
-
-Or run directly from your IDE by executing the `main` method in each benchmark class.
+The project uses unit, integration, functional and performance tests, plus JMH benchmarks.
+See [TESTING.md](TESTING.md) for what each kind of test verifies and how to run it.
 
 ## Contributors
 

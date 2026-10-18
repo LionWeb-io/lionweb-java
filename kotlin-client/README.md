@@ -1,25 +1,32 @@
 # kotlin-client
 
-Kotlin-idiomatic bindings on top of `lionweb-java-client` for connecting to a LionWeb Server.
+Kotlin-idiomatic bindings on top of `client` for connecting to a LionWeb Server.
 
 ## Features
 
-- **`LionWebClient`** — high-level client that stores and retrieves typed nodes (works with
-  `BaseNode` subclasses from `kotlin-core`)
-- **`LowLevelRepoClient`** — low-level client that works with raw serialization chunks
-- **`ClassifierResult`** — typed result wrapper returned by retrieval operations
-- **`RetrievalMode`** — controls how deeply nodes are fetched (e.g. this node only vs. subtree)
+- **`LionWebClient`** — high-level client for a LionWeb Server repository, built on the Java
+  `ExtendedLionWebClient`. It covers repositories, partitions, storing and retrieving trees,
+  incremental changes (appending trees and annotations, setting properties and references),
+  inspection queries (`nodesByClassifier`, `nodeTree`) and bulk import. It works with any `Node`,
+  including the `BaseNode` subclasses defined with `kotlin-core`.
+- **`RetrievalMode`** — controls whether `retrieve` fetches the entire subtree or only the
+  requested node
 
 ## Usage
 
 ```kotlin
-val client = LionWebClient(hostname = "localhost", port = 3005)
+val client = LionWebClient(hostname = "localhost", port = 3005, repository = "default")
 
-// Store nodes
-client.store(listOf(myNode))
+// Let the client deserialize nodes of our language
+client.registerLanguage(myLanguage)
+
+// Store a partition and its content
+client.createPartition(myPartition)
+client.storeTree(myPartition)
 
 // Retrieve by id
-val node: MyNode = client.retrieve("node-id")
+val node = client.retrieve("node-id")
+val onlyTheNode = client.retrieve("node-id", RetrievalMode.SINGLE_NODE)
 ```
 
 ## Dependency
@@ -32,9 +39,11 @@ dependencies {
 
 ## Testing
 
-Functional tests in this module require a running LionWeb Server (via Testcontainers with Docker).
-Run them with:
+Functional tests in this module require a running LionWeb Server, which is started with
+Testcontainers, so Docker must be running. Run them with:
 
 ```
 ./gradlew :kotlin-client:functionalTest
 ```
+
+See [TESTING.md](../TESTING.md) for details.
