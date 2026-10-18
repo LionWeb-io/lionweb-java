@@ -79,16 +79,25 @@ Both tasks:
 - Load dependency language files from `META-INF/lionweb/*.json` on the `compileClasspath`.
 - Write generated sources to `generationDirectory`.
 
-If you want the generated sources compiled, add the output directory to your source set, for
-example:
+When the `java` (or `java-library`) plugin is applied, the plugin also:
 
-```kotlin
-sourceSets.named("main") {
-  java.srcDir(lionweb.generationDirectory)
-}
+- adds `generationDirectory` to the `main` source set, so the generated sources are compiled;
+- adds `io.lionweb:lionweb-2024.1-core` and `org.jetbrains:annotations` to the `implementation`
+  configuration, as the generated code depends on them.
+
+All `Jar` tasks include the files from `languagesDirectory` under `META-INF/lionweb`, so that
+projects depending on your JAR can use your languages as dependencies.
+
+## Testing
+
+```bash
+./gradlew :gradle-plugin:test              # generators and plugin, with Gradle TestKit
+./gradlew :gradle-plugin:integrationTest   # full pipeline: JSON -> Java -> compiled classes
 ```
+
+See [TESTING.md](../TESTING.md) for details.
 
 ## Limitations
 
 - Protobuf (`.pb`) language files are discovered but not yet supported.
-- Node class generation does not yet support extended concepts or structured data types.
+- Structured data types are not yet supported.

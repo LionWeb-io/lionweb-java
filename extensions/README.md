@@ -1,10 +1,10 @@
-## Serialization
+# extensions
 
 This module contains a set of **serialization-related extensions** that are **not strictly required by the LionWeb specification**. They are intended as practical, interoperable additions that build on top of the standard LionWeb concepts (nodes, languages, partitions, chunks), but they are not part of the core spec itself.
 
 ### Protobuf-based serialization
 
-In addition to any specification-mandated formats, this module provides support for **Protocol Buffers (Protobuf)** as an efficient binary serialization format for LionWeb data:
+The standard Protobuf serialization of LionWeb chunks is provided by `core` (`ProtoBufSerialization`). This module builds on it with `ExtraProtoBufSerialization`, which also serializes messages that are not part of the standard, such as bulk imports:
 
 - LionWeb models are grouped into **serialization chunks**, which typically correspond to partitions or language definitions.
 - These chunks are encoded as Protobuf messages and can be converted to and from `byte[]` for storage or transport.
@@ -31,3 +31,30 @@ The LionWeb Archive format is **conventional and optional**: it is not mandated 
 - Export and import the contents of a LionWeb repository.
 - Exchange larger sets of LionWeb data between tools.
 - Store backups or snapshots of models and languages together with the exact LionWeb version they target.
+
+### Extended client
+
+`ExtendedLionWebClient` adds to the standard bulk API client the extension APIs offered by the
+LionWeb Server (`AdditionalAPIClient`):
+
+- **bulk import** of nodes, using JSON or Protobuf as transfer format, with or without compression;
+- **node tree** inspection, returning the IDs, parents and depths of the nodes in a subtree.
+
+## Dependency
+
+```kotlin
+dependencies {
+    implementation("io.lionweb:lionweb-2024.1-extensions:$lionwebVersion")
+}
+```
+
+## Testing
+
+Unit tests run with `./gradlew :extensions:test`. Functional tests exercise the extended client
+against a LionWeb Server started with Testcontainers, so they require Docker:
+
+```
+./gradlew :extensions:functionalTest
+```
+
+See [TESTING.md](../TESTING.md) for details.
